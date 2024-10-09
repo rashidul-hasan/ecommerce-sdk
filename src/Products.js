@@ -4,7 +4,8 @@ class Products {
   }
 
   async getAllProducts(options = {}) {
-    return this.sdk.fetch('/products', options);
+    console.log('got called getAllProducts');
+    // return this.sdk.fetch('/products', options);
   }
 
   async getProductsByCategory(categoryId, options = {}) {
