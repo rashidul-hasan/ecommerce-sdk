@@ -1,5 +1,6 @@
 import Cart from './Cart.js';
 import Products from './Products.js';
+import Settings from './Settings.js';
 
 class ECommerceSDK {
   constructor() {
@@ -7,6 +8,7 @@ class ECommerceSDK {
     this.secretKey = null;
     this.cart = null;
     this.products = null;
+    this.settings = null;
     this.isServer = typeof window === 'undefined';
   }
 
@@ -18,6 +20,7 @@ class ECommerceSDK {
     this.secretKey = secretKey;
     this.cart = new Cart(this);
     this.products = new Products(this);
+    this.settings = new Settings(this);
   }
 
   getHeaders() {
@@ -27,24 +30,27 @@ class ECommerceSDK {
     };
   }
 
-  async fetch(endpoint, options = {}) {
+  async fetch(endpoint, options = {}, nextOptions = {}) {
     if (!this.apiUrl || !this.secretKey) {
       throw new Error('SDK not initialized. Call init() first.');
     }
 
-    const url = `${this.apiUrl}${endpoint}`;
+    const url = `${this.apiUrl}/${endpoint}`;
     const headers = this.getHeaders();
 
+    console.log({url})
+    
     let fetchOptions = {
       ...options,
       headers: { ...headers, ...options.headers },
+      next: nextOptions
     };
 
     // If we're on the server and the method is GET, we can use Next.js cache
     if (this.isServer && (!options.method || options.method === 'GET')) {
       fetchOptions = {
         ...fetchOptions,
-        next: { revalidate: options.revalidate || 3600 }, // Default to 1 hour cache
+        next: nextOptions
       };
     }
 
